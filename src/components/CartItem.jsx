@@ -1,17 +1,13 @@
+import { formatearPrecio, obtenerPrecioEfectivo, calcularSubtotal } from '../utils/formatters';
+
 /**
  * Componente para renderizar una fila individual del carrito
  * Separa la lógica de cada item para mayor claridad y modularidad
- * 
- * Props:
- * - item: Producto en el carrito
- * - onDisminuir: Callback para disminuir cantidad
- * - onAgregar: Callback para aumentar cantidad
- * - onEliminar: Callback para eliminar producto
  */
 const CartItem = ({ item, onDisminuir, onAgregar, onEliminar }) => {
-    
-    const precio = item.enOferta ? item.precioOferta : item.precioNormal;
-    const subtotal = precio * item.cantidad;
+
+    const precio = obtenerPrecioEfectivo(item);
+    const subtotal = calcularSubtotal(precio, item.cantidad);
 
     return (
         <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -19,26 +15,26 @@ const CartItem = ({ item, onDisminuir, onAgregar, onEliminar }) => {
                 <strong>{item.titulo}</strong>
                 <br />
                 <small className="text-muted">
-                    ${precio.toLocaleString('es-CL')} x {item.cantidad}
+                    ${formatearPrecio(precio)} x {item.cantidad}
                 </small>
             </div>
-            
+
             <div className="d-flex align-items-center gap-2">
-                {/* Badge con subtotal */}
+                {/* Subtotal del producto */}
                 <span className="badge bg-primary rounded-pill">
-                    ${subtotal.toLocaleString('es-CL')}
+                    ${formatearPrecio(subtotal)}
                 </span>
-                
+
                 {/* Botones para modificar cantidad */}
                 <div className="btn-group btn-group-sm">
-                    <button 
+                    <button
                         className="btn btn-outline-secondary"
                         onClick={() => onDisminuir(item.id)}
                         title="Disminuir cantidad"
                     >
                         −
                     </button>
-                    <button 
+                    <button
                         className="btn btn-outline-secondary"
                         onClick={() => onAgregar(item)}
                         title="Aumentar cantidad"
@@ -48,7 +44,7 @@ const CartItem = ({ item, onDisminuir, onAgregar, onEliminar }) => {
                 </div>
 
                 {/* Botón eliminar */}
-                <button 
+                <button
                     className="btn btn-sm btn-danger btn-eliminar"
                     onClick={() => onEliminar(item.id)}
                     title="Eliminar producto"

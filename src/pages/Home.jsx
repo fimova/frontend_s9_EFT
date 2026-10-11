@@ -1,3 +1,9 @@
+// Importar imágenes
+import imgRotr from '/img/rotr.jpg';
+import imgTkrb from '/img/tkrbwarriors.jpg';
+import imgMeikoi from '/img/meikoi.jpg';
+import imgWwht from '/img/wwht.jpg';
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -63,7 +69,7 @@ const Home = () => {
                         <div className="carousel-inner">
                             <div className="carousel-item active">
                                 <img 
-                                    src="/frontend_s7_react/img/rotr.jpg"
+                                    src={imgRotr}
                                     className="d-block w-100"
                                     alt="Rise of the Ronin"
                                 />
@@ -71,7 +77,7 @@ const Home = () => {
 
                             <div className="carousel-item">
                                 <img 
-                                    src="/frontend_s7_react/img/tkrbwarriors.jpg"
+                                    src={imgTkrb}
                                     className="d-block w-100"
                                     alt="Touken Ranbu Warriors"
                                 />
@@ -79,7 +85,7 @@ const Home = () => {
 
                             <div className="carousel-item">
                                 <img 
-                                    src="/frontend_s7_react/img/meikoi.jpg"
+                                    src={imgMeikoi}
                                     className="d-block w-100"
                                     alt="Meiji Tokyo Renka"
                                 />
@@ -87,7 +93,7 @@ const Home = () => {
 
                             <div className="carousel-item">
                                 <img 
-                                    src="/frontend_s7_react/img/wwht.jpg"
+                                    src={imgWwht}
                                     className="d-block w-100"
                                     alt="We were here together"
                                 />

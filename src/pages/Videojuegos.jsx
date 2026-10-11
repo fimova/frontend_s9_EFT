@@ -4,12 +4,28 @@ import { videojuegos } from '../data/videojuegos';
 
 /**
  * Página del catálogo de videojuegos
- * Incluye buscador, filtro de productos y gestión del carrito
+ * Permite filtrar por categoría y buscar por título
+ * Gestión del carrito
  */
 const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
     
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('todas');
     const [busqueda, setBusqueda] = useState('');
     const [mensaje, setMensaje] = useState('');
+
+    /**
+     * Obtener todas las categorías únicas
+     */
+    const categorias = ['todas', ...new Set(videojuegos.map(v => v.categoria))];
+
+    /**
+     * Maneja el cambio de categoría
+     */
+    const handleCategoriaChange = (categoria) => {
+        setCategoriaSeleccionada(categoria);
+        setMensaje('');
+        setBusqueda('');
+    };
 
     /**
      * Maneja el cambio en el input de búsqueda
@@ -39,19 +55,21 @@ const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
         if (resultados === 0) {
             setMensaje(`No se encontraron productos con "${busqueda}".`);
         } else {
-            setMensaje(`Se encontraron ${resultados} producto(s) con "${busqueda}".`);
+            setMensaje(`Se encontraron ${resultados} producto(s).`);
         }
     };
 
     /**
-     * Filtra productos según el término de búsqueda
+     * Filtra productos por categoría y búsqueda por título
      */
-    const productosFiltrados = videojuegos.filter(producto =>
-        producto.titulo.toLowerCase().includes(busqueda.toLowerCase())
-    );
+    const productosFiltrados = videojuegos.filter(producto => {
+        const coincideCategoria = categoriaSeleccionada === 'todas' || producto.categoria === categoriaSeleccionada;
+        const coincideBusqueda = producto.titulo.toLowerCase().includes(busqueda.toLowerCase());
+        return coincideCategoria && coincideBusqueda;
+    });
 
     /**
-     * Verifica si un producto ya está en el carrito
+     * Verifica si un producto está en el carrito
      */
     const estaEnCarrito = (productoId) => {
         return carrito.some(item => item.id === productoId);
@@ -63,7 +81,6 @@ const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
     const handleAgregar = (producto) => {
         onAgregarAlCarrito(producto);
         
-        // Mostrar toast usando Bootstrap
         const toastElement = document.getElementById('toastCarrito');
         const toastBody = toastElement.querySelector('.toast-body');
         toastBody.textContent = `"${producto.titulo}" agregado al carrito`;
@@ -78,13 +95,32 @@ const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
             <section className="catalogo">
                 <h2>Catálogo Videojuegos</h2>
 
-                {/* Formulario de búsqueda */}
+                {/* Filtros por categoría */}
+                <div className="container mb-4">
+                    <div className="d-flex gap-2 flex-wrap justify-content-center mb-3">
+                        {categorias.map(categoria => (
+                            <button
+                                key={categoria}
+                                className={`btn ${
+                                    categoriaSeleccionada === categoria
+                                        ? 'btn-primary'
+                                        : 'btn-outline-primary'
+                                }`}
+                                onClick={() => handleCategoriaChange(categoria)}
+                            >
+                                {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Formulario de búsqueda por título */}
                 <div className="container mb-4">
                     <form onSubmit={handleBusquedaSubmit} className="d-flex" role="search">
                         <input 
                             type="search"
                             className="form-control me-2"
-                            placeholder="Buscar videojuego por nombre..."
+                            placeholder="Buscar por título..."
                             value={busqueda}
                             onChange={handleBusquedaChange}
                         />
@@ -93,7 +129,6 @@ const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
                         </button>
                     </form>
                     
-                    {/* Mensaje de resultados de búsqueda */}
                     {mensaje && (
                         <p className={`mt-2 ${productosFiltrados.length === 0 ? 'text-warning' : 'text-success'}`}>
                             {mensaje}
@@ -113,7 +148,7 @@ const Videojuegos = ({ onAgregarAlCarrito, carrito }) => {
                                     productoEnCarrito={estaEnCarrito(producto.id)}
                                 />
                             ))
-                        ) : busqueda.trim() !== '' && (
+                        ) : (
                             <div className="col-12 text-center">
                                 <p className="text-muted">No se encontraron productos.</p>
                             </div>

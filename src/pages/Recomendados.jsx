@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
+import { transformarPokemonAProducto } from '../utils/formatters';
 
 /**
  * Página de productos recomendados
- * Carga datos dinámicamente usando fetch API (se escogió una de Pokémon para ejemplificar)
+ * Carga datos dinámicamente usando Fetch API con AbortController
+ * Se escogió una API de Pokémon para ejemplificar
  */
 const Recomendados = ({ onAgregarAlCarrito, carrito }) => {
-    
-    // Estado para productos cargados
+
     const [productos, setProductos] = useState([]);
-    
-    // Estado para indicar si está cargando
     const [cargando, setCargando] = useState(true);
-    
-    // Estado para errores
     const [error, setError] = useState(null);
 
     /**
@@ -24,71 +21,72 @@ const Recomendados = ({ onAgregarAlCarrito, carrito }) => {
     };
 
     /**
-     * Cargar productos desde API externa
-     * Simula productos recomendados con datos de una API pública
+     * Cargar productos desde API con AbortController
+     * Previene fugas de memoria y estados inconsistentes
      */
     useEffect(() => {
+        // Crear AbortController para poder cancelar la solicitud
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => {
+            abortController.abort();
+        }, 10000); // Timeout de 10 segundos
+
         const cargarProductos = async () => {
             try {
                 setCargando(true);
                 setError(null);
 
-                // Cargar 6 Pokémon aleatorios
+                // Cargar 6 Pokémon aleatorios solo para hacerlo más dinámico
                 const promesas = [];
                 for (let i = 0; i < 6; i++) {
                     const randomId = Math.floor(Math.random() * 150) + 1;
                     promesas.push(
-                        fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`)
-                            .then(res => res.json())
+                        fetch(`https://pokeapi.co/api/v2/pokemon/${randomId}`, {
+                            signal: abortController.signal
+                        }).then(res => res.json())
                     );
                 }
 
                 const pokemones = await Promise.all(promesas);
 
-                // Transformar los datos de la API al formato usado
-                const productosTransformados = pokemones.map((pokemon, index) => {
-                    const precioNormal = Math.floor(Math.random() * 50000) + 20000;
-                    const precioOferta = Math.floor(precioNormal * 0.8);
-                    
-                    return {
-                        id: 200 + index, // IDs diferentes para no chocar
-                        titulo: `${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)} Figura`,
-                        imagen: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
-                        alt: pokemon.name,
-                        titleImagen: `${pokemon.name} - Figura coleccionable`,
-                        info: `Tipo: ${pokemon.types.map(t => t.type.name).join(', ')}`,
-                        descripcion: `Figura coleccionable oficial de ${pokemon.name}. Altura: ${pokemon.height / 10}m, Peso: ${pokemon.weight / 10}kg. Stock limitado.`,
-                        precioNormal: precioNormal,
-                        precioOferta: precioOferta,
-                        enOferta: Math.random() > 0.5
-                    };
-                });
+                // Transformar usando la utilidad
+                const productosTransformados = pokemones.map((pokemon, index) =>
+                    transformarPokemonAProducto(pokemon, index)
+                );
 
                 setProductos(productosTransformados);
             } catch (err) {
-                console.error('Error:', err);
-                setError('No pudimos cargar los productos recomendados. Intenta más tarde.');
+                // No mostrar error si fue abortado (componente desmontado)
+                if (err.name !== 'AbortError') {
+                    console.error('Error:', err);
+                    setError('No pudimos cargar los productos recomendados. Intenta más tarde.');
+                }
             } finally {
                 setCargando(false);
             }
         };
 
         cargarProductos();
-    }, []); // Se ejecuta solo una vez al montar el componente
+
+        // Cleanup: cancelar solicitud si el componente se desmonta
+        return () => {
+            abortController.abort();
+            clearTimeout(timeoutId);
+        };
+    }, []);
 
     /**
      * Agrega un producto al carrito y muestra un toast
      */
     const handleAgregar = (producto) => {
         onAgregarAlCarrito(producto);
-        
-        // Mostrar toast usando Bootstrap
+
         const toastElement = document.getElementById('toastCarrito');
         if (toastElement) {
             const toastBody = toastElement.querySelector('.toast-body');
             toastBody.textContent = `"${producto.titulo}" agregado al carrito`;
             toastElement.className = 'toast align-items-center text-bg-success border-0';
-            
+
             const toast = new window.bootstrap.Toast(toastElement);
             toast.show();
         }
@@ -99,7 +97,7 @@ const Recomendados = ({ onAgregarAlCarrito, carrito }) => {
             <section className="catalogo">
                 <h2>Pokémon Recomendados</h2>
                 <p className="text-muted text-center mb-4">
-                    Figuras coleccionables de Pokémon
+                    Figuras coleccionables cargadas dinámicamente desde la API de Pokémon
                 </p>
 
                 {/* Renderizado condicional: Cargando */}
@@ -108,7 +106,7 @@ const Recomendados = ({ onAgregarAlCarrito, carrito }) => {
                         <div className="spinner-border text-primary" role="status">
                             <span className="visually-hidden">Cargando...</span>
                         </div>
-                        <p className="mt-3">Cargando recomendados...</p>
+                        <p className="mt-3">Cargando Pokémon recomendados...</p>
                     </div>
                 )}
 
@@ -126,7 +124,7 @@ const Recomendados = ({ onAgregarAlCarrito, carrito }) => {
                     <div className="container">
                         <div className="row g-4">
                             {productos.map(producto => (
-                                <ProductCard 
+                                <ProductCard
                                     key={producto.id}
                                     producto={producto}
                                     onAgregar={handleAgregar}

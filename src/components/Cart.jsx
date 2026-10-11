@@ -1,18 +1,19 @@
 import { useEffect } from 'react';
 import CartItem from './CartItem';
 import CartEmpty from './CartEmpty';
+import { formatearPrecio } from '../utils/formatters';
 
 /**
  * Carrito lateral (offcanvas)
  * Dividido en componentes reutilizables para mayor claridad
  */
-const Cart = ({ 
-    carrito, 
-    onEliminar, 
-    onDisminuir, 
-    onAgregar, 
-    onVaciar, 
-    total 
+const Cart = ({
+    carrito,
+    onEliminar,
+    onDisminuir,
+    onAgregar,
+    onVaciar,
+    total
 }) => {
 
     /**
@@ -33,7 +34,7 @@ const Cart = ({
         const toastBody = toastElement.querySelector('.toast-body');
         toastBody.textContent = texto;
         toastElement.className = `toast align-items-center text-bg-${tipo} border-0`;
-        
+
         const toast = new window.bootstrap.Toast(toastElement);
         toast.show();
     };
@@ -48,10 +49,10 @@ const Cart = ({
         }
 
         mostrarToast(
-            `¡Compra exitosa! Total: $${total.toLocaleString('es-CL')}`,
+            `¡Compra exitosa! Total: $${formatearPrecio(total)}`,
             'success'
         );
-        
+
         setTimeout(() => {
             onVaciar();
             const offcanvasElement = document.getElementById('offcanvasCarrito');
@@ -88,7 +89,7 @@ const Cart = ({
     const handleDisminuir = (id) => {
         const producto = carrito.find(item => item.id === id);
         onDisminuir(id);
-        
+
         if (producto.cantidad === 1) {
             mostrarToast(`"${producto.titulo}" eliminado del carrito`, 'warning');
         }
@@ -106,23 +107,23 @@ const Cart = ({
     return (
         <>
             {/* Offcanvas del carrito */}
-            <div 
-                className="offcanvas offcanvas-end" 
-                tabIndex="-1" 
+            <div
+                className="offcanvas offcanvas-end"
+                tabIndex="-1"
                 id="offcanvasCarrito"
                 aria-labelledby="offcanvasCarritoLabel"
             >
-                <div 
-                    className="offcanvas-header" 
+                <div
+                    className="offcanvas-header"
                     style={{ backgroundColor: 'var(--azul-mibu)', color: 'var(--crema-mibu)' }}
                 >
                     <h5 className="offcanvas-title" id="offcanvasCarritoLabel">
                         Carrito de Compras
                     </h5>
-                    <button 
-                        type="button" 
-                        className="btn-close btn-close-white" 
-                        data-bs-dismiss="offcanvas" 
+                    <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        data-bs-dismiss="offcanvas"
                         aria-label="Close"
                     ></button>
                 </div>
@@ -147,21 +148,21 @@ const Cart = ({
 
                     {/* Footer con total y botones */}
                     <div className="mt-auto">
-                        <div 
+                        <div
                             className="d-flex justify-content-between align-items-center mb-3 p-3"
                             style={{ backgroundColor: 'var(--crema-mibu)', borderRadius: '8px' }}
                         >
                             <h5 className="mb-0">Total:</h5>
                             <h4 className="mb-0" style={{ color: 'var(--rojo-mibu)' }}>
-                                ${total.toLocaleString('es-CL')}
+                                ${formatearPrecio(total)}
                             </h4>
                         </div>
 
                         <div className="d-grid gap-2">
-                            <button 
+                            <button
                                 className="btn btn-lg"
-                                style={{ 
-                                    backgroundColor: 'var(--azul-mibu)', 
+                                style={{
+                                    backgroundColor: 'var(--azul-mibu)',
                                     color: 'var(--crema-mibu)',
                                     opacity: carrito.length === 0 ? 0.5 : 1,
                                     cursor: carrito.length === 0 ? 'not-allowed' : 'pointer'
@@ -171,7 +172,7 @@ const Cart = ({
                             >
                                 Finalizar compra
                             </button>
-                            <button 
+                            <button
                                 className="btn btn-outline-danger"
                                 onClick={handleVaciar}
                                 disabled={carrito.length === 0}
@@ -185,21 +186,21 @@ const Cart = ({
 
             {/* Toast para notificaciones */}
             <div className="toast-container position-fixed top-0 end-0 p-3">
-                <div 
-                    id="toastCarrito" 
+                <div
+                    id="toastCarrito"
                     className="toast align-items-center text-bg-success border-0"
-                    role="alert" 
-                    aria-live="assertive" 
+                    role="alert"
+                    aria-live="assertive"
                     aria-atomic="true"
                 >
                     <div className="d-flex">
                         <div className="toast-body">
                             Producto agregado al carrito
                         </div>
-                        <button 
-                            type="button" 
-                            className="btn-close btn-close-white me-2 m-auto" 
-                            data-bs-dismiss="toast" 
+                        <button
+                            type="button"
+                            className="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"
                             aria-label="Close"
                         ></button>
                     </div>
