@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation, HashRouter } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CartButton from './components/CartButton';
@@ -75,9 +75,9 @@ function AppContent() {
  */
 function App() {
   return (
-    <Router basename="/frontend_s9_EFT">
+    <HashRouter basename="/frontend_s9_EFT">
       <AppContent />
-    </Router>
+    </HashRouter>
   );
 }
 
