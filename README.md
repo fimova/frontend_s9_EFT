@@ -6,7 +6,7 @@ gestión de estado, integración de APIs externas y se intenta integrar buenas p
 
 ## 1. Acceso al sitio
 
-**[Abrir Videojuegos Mibu](https://fimova.github.io/frontend_s7_react/)**
+**[Abrir Videojuegos Mibu](https://fimova.github.io/frontend_s9_EFT/)**
 
 ## 2. Características Principales
 
@@ -78,8 +78,8 @@ C:\
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/fimova/frontend_s7_react.git
-cd frontend_s7_react
+git clone https://github.com/fimova/frontend_s9_EFT.git
+cd frontend_s9_EFT
 
 # 2. Instalar dependencias
 npm install
@@ -88,7 +88,7 @@ npm install
 npm run dev
 
 # 4. Abrir en el navegador
-# La consola mostrará: http://localhost:5173/frontend_s7_react/
+# La consola mostrará: http://localhost:5173/frontend_s9_EFT/
 ```
 
 ### 5.3 Comandos necesarios

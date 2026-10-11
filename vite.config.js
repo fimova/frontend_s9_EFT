@@ -4,7 +4,7 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/frontend_s7_react/',
+  base: '/frontend_s9_EFT/',
   build: {
     outDir: 'docs', 
   },

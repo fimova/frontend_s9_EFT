@@ -75,7 +75,7 @@ function AppContent() {
  */
 function App() {
   return (
-    <Router basename="/frontend_s7_react">
+    <Router basename="/frontend_s9_EFT">
       <AppContent />
     </Router>
   );
